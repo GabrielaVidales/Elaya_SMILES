@@ -29,7 +29,8 @@ RUN pip install --upgrade pip \
     ase \
     networkx \
     py3Dmol \
-    ipython
+    ipython \
+    torch
 
 # Crea directorio de trabajo
 WORKDIR /app
