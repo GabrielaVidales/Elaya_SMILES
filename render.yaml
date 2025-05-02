@@ -1,8 +1,6 @@
 services:
   - type: web
     name: elaya-smiles
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
-    env: python
+    env: docker
     plan: free
+    dockerfilePath: Dockerfile
