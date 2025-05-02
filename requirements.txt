@@ -1,0 +1,9 @@
+flask
+flask-cors
+rdkit
+openbabel-wheel
+py3Dmol
+ase
+dscribe
+networkx
+auto3d
