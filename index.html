@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="Logo_Elaya.jpg">
+    <title>Elya Smiles - Molecular Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.1.0/3Dmol-min.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <img src="Logo_Elaya.jpg" alt="Elaya Logo" class="navbar-logo">
+            <a href="/" target="_self">Home</a>
+            <a href="#about" target="_self">About us</a>
+            <a href="#sources" target="_self">Sources</a>
+            <a href="https://github.com/your-repo" target="_blank" class="view-code">View code</a>
+            <a href="https://github.com/your-repo" target="_blank" class="github-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="#0f6975">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Elaya SMILES</h1>
+        <h2>Molecular Conversion & Analysis</h2>
+    </header>
+
+    <main>
+        <section class="input-section">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="input-method">Input Method</label>
+                    <div class="input-method">
+                        <label>
+                            <input type="radio" name="input-method" value="single" checked>
+                            Single SMILE
+                        </label>
+                        <label>
+                            <input type="radio" name="input-method" value="file">
+                            SMILES File
+                        </label>
+                    </div>
+                </div>
+
+                <div id="single-input" class="input-group">
+                    <label for="smiles">SMILES String</label>
+                    <input type="text" id="smiles" placeholder="e.g., C#CC#CCC, C1=C2CC12">
+                </div>
+
+                <div id="single-id" class="input-group">
+                    <label for="mol-id">Random ID</label>
+                    <input type="text" id="mol-id" placeholder="e.g., smi01, benceno">
+                </div>
+
+                <div id="file-input" class="input-group" style="display: none;">
+                    <label for="smiles-file">SMILES File</label>
+                    <input type="file" id="smiles-file" accept=".smi,.txt">
+                </div>
+
+                <button id="load-smiles">Load SMILES</button>
+                <button id="view-file" class="secondary" style="display: none;">View File</button>
+            </div>
+
+            <div id="load-confirmation" style="display: none;"></div>
+
+            <div id="file-format-example" class="file-format-example" style="display: none;">
+                <strong>File format example:</strong><br>
+                CCO 1.ethanol<br>
+                C1CCCCC1 smi02<br>
+                CN1C=NC2=C1C(=O)N(C(=O)N2C) caffeine_3<br>
+                <br>
+                Format: <strong>[SMILES] [ID]</strong> (one per line)
+            </div>
+        </section>
+
+        <section class="conversion-section">
+            <div class="method-controls">
+                <div class="input-group">
+                    <label for="conversion-method">Method</label>
+                    <select id="conversion-method">
+                        <option value="rdkit">RDKit</option>
+                        <option value="openbabel">OpenBabel</option>
+                        <option value="networkx">NetworkX</option>
+                        <option value="auto3d">Auto3D</option>
+                    </select>
+                </div>
+
+                <div id="force-field-options" class="input-group">
+                    <label for="force-field">Force Field</label>
+                    <select id="force-field">
+                        <option value="uff">UFF</option>
+                        <option value="mmff94">MMFF94</option>
+                    </select>
+                </div>
+
+                <button id="convert-molecules">Convert to 3D</button>
+            </div>
+
+            <div class="conversion-row">
+                <div class="visualization-container">
+                    <div class="placeholder">3D Visualization will appear here</div>
+                    <div id="molecule-title" style="display: none;"></div>
+                    <div id="viewer-container" style="width: 100%; height: calc(100% - 80px);"></div>
+                    <div id="molecule-controls" style="display: none;">
+                        <div class="controls-left">
+                            <div class="speed-control">
+                                <span>Velocidad</span>
+                                <input type="range" id="rotation-speed" min="0" max="2" step="0.1" value="1.0">
+                            </div>
+                        </div>
+                        <div class="controls-right">
+                            <button id="prev-molecule" class="control-btn">Anterior</button>
+                            <button id="next-molecule" class="control-btn">Siguiente</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-controls">
+                    <button id="download-xyz" class="secondary">Download XYZ</button>
+                    <button id="download-image" class="secondary">Download Image</button>
+                    <div id="xyz-display" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div id="molecule-list" class="molecule-list" style="display: none;"></div>
+        </section>
+
+        <section class="analysis-section">
+            <h3>Molecular Analysis</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="mol1">Molecule 1</label>
+                    <select id="mol1" disabled></select>
+                </div>
+                <div class="input-group">
+                    <label for="mol2">Molecule 2</label>
+                    <select id="mol2" disabled></select>
+                </div>
+                <button id="calculate-similarity" disabled>Calculate Similarity</button>
+            </div>
+            <div id="similarity-results"></div>
+        </section>
+
+        <section class="analysis-section">
+            <h3>Method Comparison</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="compare-molecule">Molecule</label>
+                    <select id="compare-molecule" disabled></select>
+                </div>
+                <button id="compare-methods" disabled>Compare Methods</button>
+            </div>
+            <div id="comparison-results"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>Elaya SMILES - Molecular Tools &copy; 2025</p>
+        </div>
+    </footer>
+</body>
+</html>
