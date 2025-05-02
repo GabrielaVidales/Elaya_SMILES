@@ -28,7 +28,8 @@ RUN pip install --upgrade pip \
     dscribe \
     ase \
     networkx \
-    py3Dmol
+    py3Dmol \
+    ipython
 
 # Crea directorio de trabajo
 WORKDIR /app
