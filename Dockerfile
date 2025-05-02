@@ -1,7 +1,7 @@
-# Usa una imagen base con soporte para ciencia de datos y RDKit
+# Imagen base con Python
 FROM python:3.10-slim
 
-# Instala dependencias del sistema necesarias para RDKit, OpenBabel y Auto3D
+# Instala dependencias del sistema necesarias
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -15,31 +15,32 @@ RUN apt-get update && apt-get install -y \
     libboost-all-dev \
     && apt-get clean
 
-# Instala OpenBabel manualmente
-RUN pip install openbabel-wheel
+# Establecer directorio de trabajo
+WORKDIR /app
 
-# Instala Auto3D y RDKit desde wheels
-RUN pip install --upgrade pip \
- && pip install \
-    rdkit \
-    auto3d \
+# Copiar archivos del proyecto
+COPY . .
+
+# Instalar pip actualizado
+RUN pip install --upgrade pip
+
+# Instalar todas las dependencias necesarias
+RUN pip install \
     flask \
     flask-cors \
+    rdkit \
+    openbabel-wheel \
+    auto3d \
+    torch \
+    pandas \
+    py3Dmol \
     dscribe \
     ase \
     networkx \
-    py3Dmol \
-    ipython \
-    torch
+    ipython
 
-# Crea directorio de trabajo
-WORKDIR /app
-
-# Copia todos los archivos del proyecto
-COPY . .
-
-# Expone el puerto de Flask
+# Exponer el puerto de Flask
 EXPOSE 5000
 
-# Comando para iniciar la app
+# Comando de inicio de la aplicación
 CMD ["python", "app.py"]
