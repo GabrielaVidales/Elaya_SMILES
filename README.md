@@ -6,6 +6,14 @@
 
 ---
 
+## 🌐 Propósito y relevancia
+
+La representación lineal SMILES ha sido ampliamente utilizada por su simplicidad sintáctica y compatibilidad con bases de datos químicas. Sin embargo, su utilidad para la simulación, visualización tridimensional y predicción molecular depende críticamente de su transformación en geometrías 3D realistas.
+
+**ELAYA-Smiles automatiza y democratiza este proceso** al integrar distintos motores de conversión y algoritmos de optimización estructural, permitiendo además el análisis de similitud molecular desde múltiples enfoques.
+
+---
+
 ## 🚀 Funcionalidades principales
 
 - ✅ Conversión de cadenas SMILES a estructuras 3D con **RDKit**, **OpenBabel**, **NetworkX** o **Auto3D**.
@@ -30,45 +38,16 @@
 
 ---
 
-## 🗂️ Estructura del proyecto
+## ⚗️ Características científicas destacadas
 
-```
-ElayaSmiles/
-├── app.py                # Servidor Flask principal
-├── elaya_smiles.py       # Lógica de conversión molecular
-├── index.html            # Página web principal
-├── styles.css            # Estilos personalizados
-├── app.js                # Lógica del frontend
-├── Dockerfile            # Imagen para despliegue
-├── render.yaml           # Configuración Render (modo Docker)
-├── requirements.txt      # Dependencias del proyecto
-└── assets/               # Archivos estáticos (logo, íconos)
-```
-
----
-
-## ⚙️ Instalación local (modo desarrollador)
-
-```bash
-git clone https://github.com/TU-USUARIO/ElayaSmiles.git
-cd ElayaSmiles
-pip install -r requirements.txt
-python app.py
-```
-
-> Asegúrate de tener instalados RDKit, OpenBabel, Auto3D y sus dependencias (preferiblemente mediante Docker o Conda).
-
----
-
-## 🐳 Despliegue en Render (Docker)
-
-1. Sube el repositorio a GitHub con `Dockerfile` y `render.yaml`.
-2. Crea un Web Service en [Render](https://render.com).
-3. Selecciona “Deploy with Docker”.
-4. Verifica que el servidor Flask esté configurado como:  
-```python
-app.run(host="0.0.0.0", port=5000)
-```
+- **Conversión multi-método SMILES → 3D**: soporta RDKit, OpenBabel, Auto3D y NetworkX.
+- **Optimización geométrica por energía** (Auto3D) con soporte para desactivación de GPU.
+- **Análisis estructural de similitud molecular** mediante:
+  - Índices topológicos (Tanimoto sobre fingerprints)
+  - Descriptores atómicos y SOAP (Smooth Overlap of Atomic Positions)
+  - Distancias en el espacio de configuraciones (Valle-Oganov)
+- **Visualización molecular interactiva** mediante Py3Dmol.
+- **Exportación en formato XYZ para simulaciones posteriores.**
 
 ---
 
@@ -88,12 +67,8 @@ app.run(host="0.0.0.0", port=5000)
 
 ---
 
-## 👨‍🔬 Créditos
+## 👩‍🔬 Desarrollo
 
-Proyecto desarrollado por **Gabriela Vidales** en colaboración con **Theochem Mérida - CINVESTAV**, como una propuesta para facilitar el análisis molecular estructural desde el entorno web.
+Este sistema ha sido desarrollado por **Gabriela Vidales** como parte de un esfuerzo por integrar herramientas de código abierto con flujos de trabajo reproducibles para la representación y análisis molecular tridimensional.
 
----
-
-## 📄 Licencia
-
-Este proyecto está bajo licencia **MIT**. Consulta el archivo `LICENSE` para más información.
+El proyecto toma inspiración tanto de la necesidad académica en el aula como de las exigencias del laboratorio computacional.
