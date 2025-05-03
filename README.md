@@ -25,19 +25,6 @@ La representación lineal SMILES ha sido ampliamente utilizada por su simplicida
 
 ---
 
-## 🧰 Tecnologías utilizadas
-
-| Categoría             | Herramientas                                       |
-|-----------------------|----------------------------------------------------|
-| Backend               | Flask, Flask-CORS                                  |
-| Química computacional | RDKit, OpenBabel, Auto3D, ASE, dscribe             |
-| Visualización         | Py3Dmol, Chart.js                                  |
-| Frontend              | HTML5, CSS3, JavaScript                            |
-| Infraestructura       | Docker, Render                                     |
-| Machine Learning      | PyTorch (Auto3D dependency)                        |
-
----
-
 ## ⚗️ Características científicas destacadas
 
 - **Conversión multi-método SMILES → 3D**: soporta RDKit, OpenBabel, Auto3D y NetworkX.
@@ -48,6 +35,19 @@ La representación lineal SMILES ha sido ampliamente utilizada por su simplicida
   - Distancias en el espacio de configuraciones (Valle-Oganov)
 - **Visualización molecular interactiva** mediante Py3Dmol.
 - **Exportación en formato XYZ para simulaciones posteriores.**
+- 
+---
+
+## 🧰 Tecnologías utilizadas
+
+| Categoría             | Herramientas                                       |
+|-----------------------|----------------------------------------------------|
+| Backend               | Flask, Flask-CORS                                  |
+| Química computacional | RDKit, OpenBabel, Auto3D, ASE, dscribe             |
+| Visualización         | Py3Dmol, Chart.js                                  |
+| Frontend              | HTML5, CSS3, JavaScript                            |
+| Infraestructura       | Docker, Render                                     |
+| Machine Learning      | PyTorch (Auto3D dependency)                        |
 
 ---
 
@@ -71,4 +71,4 @@ La representación lineal SMILES ha sido ampliamente utilizada por su simplicida
 
 Este sistema ha sido desarrollado por **Gabriela Vidales** como parte de un esfuerzo por integrar herramientas de código abierto con flujos de trabajo reproducibles para la representación y análisis molecular tridimensional.
 
-El proyecto toma inspiración tanto de la necesidad académica en el aula como de las exigencias del laboratorio computacional.
+Se agradece especialmente el apoyo del Dr. Filiberto Ortiz Chi y el Dr. Luis Ortiz por su valiosa orientación durante el desarrollo de esta herramienta.
