@@ -1,4 +1,4 @@
-# 🧪 ELAYA-Smiles: Herramienta de Conversión y Análisis Molecular
+# ELAYA-Smiles: Herramienta de Conversión y Análisis Molecular ✨
 
 ![Logo Elaya](Logo_Elaya.jpg)
 
