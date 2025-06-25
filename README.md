@@ -1,6 +1,6 @@
 # ELAYA-Smiles: Herramienta de Conversión y Análisis Molecular ✨
 
-![Logo Elaya](Logo_Elaya.jpg)
+![Logo Elaya](pictures/Logo_Elaya.jpg)
 
 **ELAYA** (_Energy-minimized Linear-to-structure Atom Yielding Algorithm_) es una aplicación web para la conversión de representaciones moleculares lineales (SMILES) a estructuras tridimensionales optimizadas, permitiendo su visualización y análisis comparativo. Desarrollada como una herramienta de apoyo en química computacional, esta plataforma integra múltiples motores de conversión y métodos de análisis estructural.
 
