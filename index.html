@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="pictures/Logo_Elaya.jpg">
+    <title>Elya Smiles - Molecular Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.1.0/3Dmol-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>           
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div id="load-confirmation" style="display: none;"></div>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <img src="pictures/Logo_Elaya.jpg" alt="Elaya Logo" class="navbar-logo">
+            <a href="#home">Home</a>
+            <a href="#background">Background</a>
+            <a href="#simulator" target="_self">Simulator</a>
+            <div class="code-links">
+                <a href="https://github.com/GabrielaVidales/Elaya_SMILES/blob/main/elaya_smiles.py" target="_blank" class="view-code-icon"> View code
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#0f6975">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+                    </svg>
+                </a>
+            </div> 
+            
+        </div>
+    </nav>
+
+    <header>
+        <h1><a href="#home" class="gold-flash">ELAYA SMILES</a></h1>
+        <h2><em>"Energy-minimized Linear-to-structure Atom Yielding Algorithm"</em>
+             <!--Centro de Investigación y Estudios Avanzados (CINVESTAV) Mérida, Yucatán, México</h2>-->
+    </header>
+
+    <main>
+        <section class="input-section">
+            <div class="input-row">
+                <div class="input-group">
+                    <div class="input-group-iz">
+                        <label for="input-method">Input Method</label>
+                        <div class="input-method">
+                            <label>
+                                <input type="radio" name="input-method" value="single" checked>
+                                Single SMILE
+                            </label>
+                            <label>
+                                <input type="radio" name="input-method" value="file">
+                                SMILES File
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="single-input" class="input-group">
+                    <div class="input-overlay-wrapper">
+                        <input type="text" id="smiles" list="smiles-history" placeholder="SMILES String. Example: C#CC#CCC, C1=CC=CC1">
+                        <button id="load-smiles">Load SMILES</button>
+                    </div>
+                    <datalist id="smiles-history"></datalist>
+                </div>
+
+                <div id="file-input" class="input-group" style="display: none;">
+                    <div class="input-overlay-wrapper">
+                        <input type="file" id="smiles-file" accept=".smi,.txt">
+                        <button id="load-smiles-file">Load SMILES File</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="file-format-example" class="file-format-example" style="display: none;">
+                <strong>Document content example:</strong><br>
+                C1CN1<br>
+                C#CCC#CC<br>
+                CN1C=NC2=C1C(=O)N(C(=O)N2C)<br><br>
+                Format: <strong>[SMILE]</strong> (one per line)<br>
+            </div>
+        </section>
+
+        <section class="conversion-section">
+            <div class="method-controls">
+                <div class="input-group">
+                    <label for="method">
+                        Method
+                        <span class="info-icon" 
+                            data-tooltip-id="tooltip-method" 
+                            data-url="https://en.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_System">🛈</span>
+                        <div id="tooltip-method" class="custom-tooltip">
+                            Algorithm used to convert a SMILES string into a 3D structure.<br><br>
+                            <strong>● RDKit:</strong> Cheminformatics library using distance geometry.<br>
+                            <strong>● OpenBabel:</strong> Versatile tool that builds 3D from templates and force fields.<br>
+                            <strong>● NetworkX:</strong> Approximate 3D based on molecular graph layout.<br>
+                            <strong>● Auto3D:</strong> Deep learning-based geometry generation...
+                        </div>
+                    </label>
+                    <select id="conversion-method">
+                        <option value="rdkit">RDKit</option>
+                        <option value="openbabel">OpenBabel</option>
+                        <option value="networkx">NetworkX</option>
+                        <option value="auto3d">Auto3D</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="force-field">
+                        Force Field
+                        <span class="info-icon" 
+                            data-tooltip-id="tooltip-forcefield"
+                            data-url="https://en.wikipedia.org/wiki/Force_field_(chemistry)">🛈</span>
+                        <div id="tooltip-forcefield" class="custom-tooltip">
+                            Mathematical models that describe the potential energy of a system.<br><br>
+                            <strong>● UFF:</strong> Universal Force Field – covers most elements, good for general use.<br>
+                            <strong>● MMFF94:</strong> Merck Molecular Force Field – optimized for organic molecules.<br>
+                            <strong>● GAFF:</strong> General Amber Force Field – for drug-like molecules.<br>
+                            <strong>● CHARMM:</strong> Chemistry at HARvard Macromolecular Mechanics...
+                        </div>
+                    </label>
+                    <select id="force-field">
+                        <option value="uff">UFF</option>
+                        <option value="mmff94">MMFF94</option>
+                        <option value="gaff">GAFF</option>
+                        <option value="charmm">CHARMM</option>
+                    </select>
+                </div>
+
+                <button id="convert-molecules">
+                    <span class="button-label">Convert to 3D</span>
+                    <div class="water-loader" style="display: none;"></div>
+                </button>
+            </div>
+
+            <div class="conversion-row">
+                <div class="visualization-container">
+                    <div id="rec-controls">
+                        <!-- Capturar imagen -->
+                        <button id="screenshot-btn" title="Take a Screenshot">
+                            <svg viewBox="0 0 24 24" class="icon">
+                            <path d="M20 5h-3.17l-1.84-2H9.01L7.17 5H4a2 2 0 0 0-2 2v11a2 
+                                    2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-8 
+                                    13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 
+                                    6 3 3 0 0 0 0-6z"/>
+                            </svg>
+                        </button>
+                        <!-- Botón único que cambia de forma -->
+                        <button id="record-btn" title="Start Recording">
+                            <svg viewBox="0 0 24 24" class="icon">
+                            <circle cx="12" cy="12" r="8" />
+                            </svg>
+                        </button>
+                    </div>
+
+            <!-- Cuenta regresiva -->
+                    <div id="countdown"></div>
+
+                    <div class="view-toggle">
+                        <button id="toggle-3d" class="view-btn active">3D</button>
+                        <button id="toggle-2d" class="view-btn">2D</button>
+                    </div>
+
+                    <div class="placeholder">3D Visualization will appear here</div>
+
+                    <!-- Título y contenedor de visualización -->
+                    <div id="molecule-title" style="display: none;"></div>
+                    <div id="viewer-container" style="width: 100%; height: calc(100% - 80px); position: relative;">
+                        <div id="viewer-3d" style="width: 100%; height: 100%;"></div>
+                        <img id="image-2d" style="display: none; width: 100%; height: 100%; object-fit: contain; background: white; border-radius: 15px;" />
+                    </div>
+
+                    <div id="molecule-controls" style="display: none;">
+                        <div class="controls-left">
+                            <div class="speed-control">
+                                <span>Speed</span>
+                                <input type="range" id="rotation-speed" min="0" max="2" step="0.1" value="1.0">
+                            </div>
+                        </div>
+                        <div class="controls-right">
+                            <button id="prev-molecule" class="control-btn">Back</button>
+                            <button id="next-molecule" class="control-btn">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization-controls">
+                    <div id="xyz-display" style="display: none;"></div>
+                    <button id="download-xyz" class="secondary">Download XYZ</button>
+                    <button id="download-image" class="secondary">Download Image</button>
+                </div>
+            </div>
+
+            <div id="molecule-list" class="molecule-list" style="display: none;"></div>
+        </section>
+
+         <!--<section class="analysis-section">
+            <h3>Molecular Analysis</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="mol1">Molecule 1</label>
+                    <select id="mol1" disabled></select>
+                </div>
+                <div class="input-group">
+                    <label for="mol2">Molecule 2</label>
+                    <select id="mol2" disabled></select>
+                </div>
+                <button id="calculate-similarity" disabled>Calculate Similarity</button>
+            </div>
+            <div id="similarity-results"></div>
+        </section>
+
+        <section class="analysis-section">
+            <h3>Method Comparison</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="compare-molecule">Molecule</label>
+                    <select id="compare-molecule" disabled></select>
+                </div>
+                <button id="compare-methods" disabled>Compare Methods</button>
+            </div>
+            <div id="comparison-results"></div>
+        </section>-->
+
+        <section id="home-info" style="display: none;">
+            <div id="home-top-anchor"></div>
+            <div style="text-align: center; background-color: #000; padding: 2rem 1rem 0.5rem; margin: 0rem">
+                <h2 class="intro-heading">Welcome to <strong>ELAYA SMILES</strong></h2>
+                <p class="intro-subtitle">Energy-minimized Linear-to-structure Atom Yielding Algorithm</p>
+                <img src="pictures/Logo_Elaya.jpg" alt="ELAYA Logo" class="logo-img" />
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>🌐 Scientific Motivation and Scope</h3>
+                <p>
+                <strong>ELAYA</strong> is a scientific web platform for converting 
+                <a href="https://en.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_System" target="_blank">SMILES</a> 
+                into optimized 3D structures using methods such as 
+                <a href="https://www.rdkit.org/" target="_blank">RDKit</a>, 
+                <a href="http://openbabel.org/" target="_blank">OpenBabel</a>, and 
+                <a href="https://github.com/ShanghaiTech-IntelligentGroup/Auto3D" target="_blank">Auto3D</a>.
+                </p>
+                <p>
+                It enables interactive visualization, geometric optimization, and similarity analysis via 
+                <a href="https://en.wikipedia.org/wiki/Tanimoto_coefficient" target="_blank">Tanimoto coefficient</a>, 
+                <a href="https://singroup.github.io/dscribe/latest/tutorials/descriptors/soap.html" target="_blank">SOAP</a>, and 
+                <a href="https://www.nature.com/articles/nmat3568" target="_blank">Valle-Oganov metric</a>.
+                </p>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>🚀 Core Functionalities</h3>
+                <ul>
+                <li>SMILES → 3D conversion using multiple algorithms</li>
+                <li>Force field selection: 
+                    <a href="https://en.wikipedia.org/wiki/Universal_Force_Field" target="_blank">UFF</a>, 
+                    <a href="https://en.wikipedia.org/wiki/MMFF94" target="_blank">MMFF94</a>, 
+                    GAFF, CHARMM</li>
+                <li>Structural similarity scoring and 3D comparison</li>
+                <li>Interactive 3D rendering with 
+                    <a href="https://3dmol.csb.pitt.edu/" target="_blank">Py3Dmol</a></li>
+                <li>Export to <code>.xyz</code> format</li>
+                </ul>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>🧰 Technologies</h3>
+                <ul>
+                <li><strong>Backend:</strong> 
+                    <a href="https://flask.palletsprojects.com/" target="_blank">Flask</a>, 
+                    <a href="https://www.python.org/" target="_blank">Python</a></li>
+                <li><strong>Frontend:</strong> HTML, CSS, JavaScript</li>
+                <li><strong>Libraries:</strong> 
+                    <a href="https://www.rdkit.org/" target="_blank">RDKit</a>, 
+                    <a href="http://openbabel.org/" target="_blank">OpenBabel</a>, 
+                    <a href="https://singroup.github.io/dscribe/" target="_blank">dscribe</a>, 
+                    <a href="https://github.com/ShanghaiTech-IntelligentGroup/Auto3D" target="_blank">Auto3D</a></li>
+                <li><strong>Visualization:</strong> 
+                    <a href="https://3dmol.csb.pitt.edu/" target="_blank">Py3Dmol</a>, 
+                    <a href="https://www.chartjs.org/" target="_blank">Chart.js</a></li>
+                </ul>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>👩‍🔬 Authorship</h3>
+                <p>
+                Developed by <strong>Gabriela Vidales</strong> with scientific guidance from 
+                Dr. Filiberto Ortiz Chi and Dr. Luis Ortiz. ELAYA is a research-grade tool that 
+                fosters open and reproducible science.
+                </p>
+            </div>
+        </section>
+
+        <section id="background-info" style="display: none;">
+            <div style="text-align: center; background-color: #000; padding: 2rem 1rem 0.5rem; margin: 0rem">
+                <h2 class="intro-heading">Understanding ELAYA SMILES</h2>
+                <img src="pictures/Example.png" alt="SMILES" class="example" />
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>🧪 What are SMILES?</h3>
+                <p>
+                <a href="https://en.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_System" target="_blank">
+                    SMILES</a> stands for <strong>Simplified Molecular Input Line Entry System</strong>. It is a way of describing a chemical compound using a simple text string. For example, benzene is written as <code>C1=CC=CC=C1</code>.
+                </p>
+                <p>
+                This notation encodes atoms, bonds, and connectivity. It is readable by computers and widely used in 
+                <a href="https://pubchem.ncbi.nlm.nih.gov/" target="_blank">chemical databases</a> and 
+                <a href="https://www.chemaxon.com/products/marvin" target="_blank">software tools</a>.
+                </p>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>⚙️ How are 3D structures generated?</h3>
+                <p>To perform simulations or visualize molecules in 3D, SMILES must be converted into 3D atomic coordinates. ELAYA uses different algorithms for this:</p>
+                <ul>
+                <li><strong><a href="https://www.rdkit.org/" target="_blank">RDKit</a>:</strong> cheminformatics library using force fields and distance geometry</li>
+                <li><strong><a href="http://openbabel.org/" target="_blank">OpenBabel</a>:</strong> format converter and 3D structure builder</li>
+                <li><strong><a href="https://networkx.org/" target="_blank">NetworkX</a>:</strong> uses molecular graphs to approximate coordinates</li>
+                <li><strong><a href="https://github.com/ShanghaiTech-IntelligentGroup/Auto3D" target="_blank">Auto3D</a>:</strong> deep learning and AI-assisted optimization</li>
+                </ul>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>🔋 What are force fields?</h3>
+                <p>
+                A <strong>force field</strong> is a set of mathematical equations and parameters that simulate physical forces between atoms — like bond stretching or angle bending.
+                </p>
+                <p>Common options include:</p>
+                <ul>
+                <li><a href="https://en.wikipedia.org/wiki/Universal_Force_Field" target="_blank"><strong>UFF:</strong></a> Universal Force Field — general-purpose</li>
+                <li><a href="https://en.wikipedia.org/wiki/MMFF94" target="_blank"><strong>MMFF94:</strong></a> Merck Molecular Force Field — for organic molecules</li>
+                <li><strong>GAFF:</strong> General AMBER Force Field — used in drug design</li>
+                <li><strong>CHARMM:</strong> Accurate modeling of biomolecules and proteins</li>
+                </ul>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>📏 What is structural similarity?</h3>
+                <p>ELAYA can compare molecular structures using the following algorithms:</p>
+                <ul>
+                <li><strong><a href="https://en.wikipedia.org/wiki/Tanimoto_coefficient" target="_blank">Tanimoto Index:</a></strong> compares molecular fingerprints</li>
+                <li><strong><a href="https://singroup.github.io/dscribe/latest/tutorials/descriptors/soap.html" target="_blank">SOAP:</a></strong> Smooth Overlap of Atomic Positions using 3D density</li>
+                <li><strong><a href="https://www.nature.com/articles/nmat3568" target="_blank">Valle-Oganov Metric:</a></strong> comparison in structural descriptor space</li>
+                </ul>
+            </div>
+
+            <div class="card fade-in-section">
+                <h3>📈 Workflow Overview</h3>
+                <p>The ELAYA platform works in the following sequence:</p>
+                <ol>
+                <li>User inputs a <a href="https://en.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_System" target="_blank">SMILES</a> string or file</li>
+                <li>System converts it to a 3D structure using selected algorithm and force field</li>
+                <li>Molecule is rendered using <a href="https://3dmol.csb.pitt.edu/" target="_blank">Py3Dmol</a></li>
+                <li>User may compare methods or analyze similarity</li>
+                <li>Final structure is available for <code>.xyz</code> download</li>
+                <li> </li>
+                </ol>
+                <div style="text-align: center;"><img src="pictures/flowchart_elaya.png" alt="Flowchart" class="flowchart-img"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+        <p>Elaya SMILES - Molecular Viewer© 2025</p>
+        <p><em>Developed by Gabriela Vidales, Luis Gonzalez, Filiberto Ortiz, and Gabriel Merino.</em></p>
+        </div>
+    </footer>
+</body>
+</html>
