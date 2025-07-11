@@ -42,5 +42,5 @@ RUN pip install \
 # Exponer el puerto de Flask
 EXPOSE 10000
 
-# Comando de inicio de la aplicación
-CMD ["sh", "-c", "python app.py"]
+# Comando para iniciar la app con Gunicorn
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000"]
