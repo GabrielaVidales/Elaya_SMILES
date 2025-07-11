@@ -40,7 +40,7 @@ RUN pip install \
     ipython
 
 # Exponer el puerto de Flask
-EXPOSE 5000
+EXPOSE 10000
 
 # Comando de inicio de la aplicación
-CMD ["python", "app.py"]
+CMD ["sh", "-c", "python app.py"]
