@@ -95,14 +95,12 @@
                             <strong>● RDKit:</strong> Cheminformatics library using distance geometry.<br>
                             <strong>● OpenBabel:</strong> Versatile tool that builds 3D from templates and force fields.<br>
                             <strong>● NetworkX:</strong> Approximate 3D based on molecular graph layout.<br>
-                            <strong>● Auto3D:</strong> Deep learning-based geometry generation...
                         </div>
                     </label>
                     <select id="conversion-method">
                         <option value="rdkit">RDKit</option>
                         <option value="openbabel">OpenBabel</option>
                         <option value="networkx">NetworkX</option>
-                        <option value="auto3d">Auto3D</option>
                     </select>
                 </div>
 
@@ -116,15 +114,11 @@
                             Mathematical models that describe the potential energy of a system.<br><br>
                             <strong>● UFF:</strong> Universal Force Field – covers most elements, good for general use.<br>
                             <strong>● MMFF94:</strong> Merck Molecular Force Field – optimized for organic molecules.<br>
-                            <strong>● GAFF:</strong> General Amber Force Field – for drug-like molecules.<br>
-                            <strong>● CHARMM:</strong> Chemistry at HARvard Macromolecular Mechanics...
                         </div>
                     </label>
                     <select id="force-field">
                         <option value="uff">UFF</option>
                         <option value="mmff94">MMFF94</option>
-                        <option value="gaff">GAFF</option>
-                        <option value="charmm">CHARMM</option>
                     </select>
                 </div>
 
@@ -194,34 +188,6 @@
 
             <div id="molecule-list" class="molecule-list" style="display: none;"></div>
         </section>
-
-         <!--<section class="analysis-section">
-            <h3>Molecular Analysis</h3>
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="mol1">Molecule 1</label>
-                    <select id="mol1" disabled></select>
-                </div>
-                <div class="input-group">
-                    <label for="mol2">Molecule 2</label>
-                    <select id="mol2" disabled></select>
-                </div>
-                <button id="calculate-similarity" disabled>Calculate Similarity</button>
-            </div>
-            <div id="similarity-results"></div>
-        </section>
-
-        <section class="analysis-section">
-            <h3>Method Comparison</h3>
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="compare-molecule">Molecule</label>
-                    <select id="compare-molecule" disabled></select>
-                </div>
-                <button id="compare-methods" disabled>Compare Methods</button>
-            </div>
-            <div id="comparison-results"></div>
-        </section>-->
 
         <section id="home-info" style="display: none;">
             <div id="home-top-anchor"></div>
