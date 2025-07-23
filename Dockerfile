@@ -39,8 +39,7 @@ RUN pip install \
     networkx \
     ipython
 
-# Exponer el puerto de Flask
-EXPOSE 10000
+EXPOSE 5000
 
-# Comando para iniciar la app con Gunicorn
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000"]
+# Comando de inicio de la aplicación
+CMD ["python", "app.py"]
