@@ -34,7 +34,7 @@
 
     <header>
         <h1><a href="#home" class="gold-flash">ELAYA SMILES</a></h1>
-        <h2><em>"Energy-minimized Linear-to-structure Atom Yielding Algorithm"</em>
+        <h2><em>"Convert SMILES to 3D/2D structure"</em>
              <!--Centro de Investigación y Estudios Avanzados (CINVESTAV) Mérida, Yucatán, México</h2>-->
     </header>
 
@@ -43,7 +43,7 @@
             <div class="input-row">
                 <div class="input-group">
                     <div class="input-group-iz">
-                        <label for="input-method">Input Method</label>
+                        <label for="input-method">① Choose Input Type</label>
                         <div class="input-method">
                             <label>
                                 <input type="radio" name="input-method" value="single" checked>
@@ -59,8 +59,8 @@
 
                 <div id="single-input" class="input-group">
                     <div class="input-overlay-wrapper">
-                        <input type="text" id="smiles" list="smiles-history" placeholder="SMILES String. Example: C#CC#CCC, C1=CC=CC1">
-                        <button id="load-smiles">Load SMILES</button>
+                        <input type="text" id="smiles" list="smiles-history" placeholder="Enter your SMILES string eg: C1=CC2=C(C=C1O)NC=C2CCN">
+
                     </div>
                     <datalist id="smiles-history"></datalist>
                 </div>
@@ -86,7 +86,7 @@
             <div class="method-controls">
                 <div class="input-group">
                     <label for="method">
-                        Method
+                        ② Select 3D Construction Method
                         <span class="info-icon" 
                             data-tooltip-id="tooltip-method" 
                             data-url="https://en.wikipedia.org/wiki/Simplified_Molecular_Input_Line_Entry_System">🛈</span>
@@ -95,18 +95,20 @@
                             <strong>● RDKit:</strong> Cheminformatics library using distance geometry.<br>
                             <strong>● OpenBabel:</strong> Versatile tool that builds 3D from templates and force fields.<br>
                             <strong>● NetworkX:</strong> Approximate 3D based on molecular graph layout.<br>
+                            <!--<strong>● Auto3D:</strong> Deep learning-based geometry generation...-->
                         </div>
                     </label>
                     <select id="conversion-method">
                         <option value="rdkit">RDKit</option>
                         <option value="openbabel">OpenBabel</option>
                         <option value="networkx">NetworkX</option>
+                        <!--<option value="auto3d">Auto3D</option>-->
                     </select>
                 </div>
 
                 <div class="input-group">
                     <label for="force-field">
-                        Force Field
+                        ③ <i>(Optional)</i> Choose a Force Field for structure optimization
                         <span class="info-icon" 
                             data-tooltip-id="tooltip-forcefield"
                             data-url="https://en.wikipedia.org/wiki/Force_field_(chemistry)">🛈</span>
@@ -114,11 +116,15 @@
                             Mathematical models that describe the potential energy of a system.<br><br>
                             <strong>● UFF:</strong> Universal Force Field – covers most elements, good for general use.<br>
                             <strong>● MMFF94:</strong> Merck Molecular Force Field – optimized for organic molecules.<br>
+                            <!--<strong>● GAFF:</strong> General Amber Force Field – for drug-like molecules.<br>
+                            <strong>● CHARMM:</strong> Chemistry at HARvard Macromolecular Mechanics...-->
                         </div>
                     </label>
                     <select id="force-field">
                         <option value="uff">UFF</option>
                         <option value="mmff94">MMFF94</option>
+                        <!--<option value="gaff">GAFF</option>
+                        <option value="charmm">CHARMM</option>-->
                     </select>
                 </div>
 
@@ -152,8 +158,8 @@
                     <div id="countdown"></div>
 
                     <div class="view-toggle">
-                        <button id="toggle-3d" class="view-btn active">3D</button>
-                        <button id="toggle-2d" class="view-btn">2D</button>
+                        <!--<button id="toggle-3d" class="view-btn active">3D</button>
+                        <button id="toggle-2d" class="view-btn">2D</button>-->
                     </div>
 
                     <div class="placeholder">3D Visualization will appear here</div>
@@ -180,8 +186,25 @@
                 </div>
 
                 <div class="visualization-controls">
+                   
+                     <!--<div class="tab-bar" id="format-tab-bar" style="display: none;">
+                        <button class="tab-btn" data-format="xyz">XYZ</button>
+                        <button class="tab-btn" data-format="sdf">SDF</button>
+                        <button class="tab-btn" data-format="mol">MOL</button>
+                        <button class="tab-btn" data-format="pdb">PDB</button>
+                    </div>-->
+
                     <div id="xyz-display" style="display: none;"></div>
-                    <button id="download-xyz" class="secondary">Download XYZ</button>
+                    <div id="sdf-display" class="format-display" style="display: none;"></div>
+                    <div id="mol-display" class="format-display" style="display: none;"></div>
+                    <div id="mol2-display" class="format-display" style="display: none;"></div>
+                    <div id="pdb-display" class="format-display" style="display: none;"></div>
+
+                    <div class="individual-downloads" style="display: none;">
+                        <a class="download-btn" id="dowload" href="#" download>⬇</a>
+                    </div>
+
+                    <button id="download-xyz" class="secondary">Download All</button>
                     <button id="download-image" class="secondary">Download Image</button>
                 </div>
             </div>
@@ -189,11 +212,39 @@
             <div id="molecule-list" class="molecule-list" style="display: none;"></div>
         </section>
 
+         <!--<section class="analysis-section">
+            <h3>Molecular Analysis</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="mol1">Molecule 1</label>
+                    <select id="mol1" disabled></select>
+                </div>
+                <div class="input-group">
+                    <label for="mol2">Molecule 2</label>
+                    <select id="mol2" disabled></select>
+                </div>
+                <button id="calculate-similarity" disabled>Calculate Similarity</button>
+            </div>
+            <div id="similarity-results"></div>
+        </section>
+
+        <section class="analysis-section">
+            <!--<h3>Method Comparison</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="compare-molecule">Molecule comparation</label>
+                    <select id="compare-molecule" disabled></select>
+                </div>
+                <button id="compare-methods" disabled>Compare Methods</button>
+            </div>
+            <div id="comparison-results"></div>
+        </section>-->
+
         <section id="home-info" style="display: none;">
             <div id="home-top-anchor"></div>
             <div style="text-align: center; background-color: #000; padding: 2rem 1rem 0.5rem; margin: 0rem">
                 <h2 class="intro-heading">Welcome to <strong>ELAYA SMILES</strong></h2>
-                <p class="intro-subtitle">Energy-minimized Linear-to-structure Atom Yielding Algorithm</p>
+                <p class="intro-subtitle">"Energy-minimized Linear-to-structure Atom Yielding Algorithm"</p>
                 <img src="pictures/Logo_Elaya.jpg" alt="ELAYA Logo" class="logo-img" />
             </div>
 
@@ -261,7 +312,7 @@
         <section id="background-info" style="display: none;">
             <div style="text-align: center; background-color: #000; padding: 2rem 1rem 0.5rem; margin: 0rem">
                 <h2 class="intro-heading">Understanding ELAYA SMILES</h2>
-                <img src="pictures/Example.png" alt="SMILES" class="example" />
+                <video src="pictures/example.webm" class="example" autoplay loop muted playsinline></video>
             </div>
 
             <div class="card fade-in-section">
