@@ -111,22 +111,9 @@ document.getElementById('download-image').addEventListener('click', downloadImag
 
 document.getElementById('smiles-file').addEventListener('change', function () {
     this.classList.add('touched');
-    const file = this.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const lines = e.target.result.split('\n').filter(Boolean);
-        molecules = lines.map((line, i) => {
-            const parts = line.trim().split(/\s+/);
-            return {
-                smiles: parts[0],
-                id: parts[1] || `mol${i + 1}`
-            };
-        });
-        console.log("Moleculas cargadas desde archivo:", molecules);
-    };
-    reader.readAsText(file);
+    const methodRadio = document.querySelector('input[name="input-method"][value="file"]');
+    if (methodRadio) methodRadio.checked = true;
+    toggleInputMethod();
 });
 
 document.querySelectorAll('.tab-btn').forEach(button => {
@@ -157,6 +144,10 @@ document.querySelectorAll('input, select').forEach(el => {
     el.addEventListener(eventType, () => {
         el.classList.add('touched');
     });
+});
+
+document.getElementById('load-smiles-file').addEventListener('click', () => {
+    loadSmiles();
 });
 
 loadSmilesHistory();
@@ -594,18 +585,67 @@ async function convertMolecules() {
     label.style.opacity = '0.3';
     convertBtn.disabled = true;
     createBubbles(loader);
-
+    
     try {
         if (!molecules.length) {
             throw new Error('No hay moléculas cargadas para convertir');
         }
 
-        const method = document.getElementById('conversion-method').value;
-        const forceField = document.getElementById('force-field').value;
+        const prevBtn = document.getElementById('prev-molecule');
+        const nextBtn = document.getElementById('next-molecule');
+        const speedControl = document.querySelector('.speed-control');
 
-        const convertedMolecules = [];
+        let selectedIndices = null;
 
-        for (const mol of molecules) {
+        if (molecules.length > 1) {
+            const selected = await showMoleculeSelectionModal();
+            if (!selected || selected.size === 0) return;
+
+            selectedIndices = [...selected];
+
+            // Convertir y almacenar XYZ de las seleccionadas
+            const selectedMolecules = [];
+            for (const index of selectedIndices) {
+                const mol = molecules[index];
+                const method = document.getElementById('conversion-method').value;
+                const forceField = document.getElementById('force-field').value;
+
+                const response = await fetch(`${API_BASE_URL}/convert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        smiles: mol.smiles,
+                        identifier: mol.id,
+                        method,
+                        force_field: forceField
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error en la conversión');
+                }
+
+                const data = await response.json();
+                selectedMolecules.push({ ...mol, xyz: data.xyz });
+                showSuccess(`Molécula convertida exitosamente`);
+            }
+
+            molecules = selectedMolecules;
+            currentMoleculeIndex = 0;
+            currentXYZ = molecules[0].xyz;
+
+            render3DMolecule(currentXYZ, molecules[0].smiles);
+            updateXYZDisplay();
+
+            document.getElementById('format-tab-bar').style.display = 'flex';
+
+        } else {
+            // Solo una molécula, convertirla
+            const mol = molecules[0];
+            const method = document.getElementById('conversion-method').value;
+            const forceField = document.getElementById('force-field').value;
+
             const response = await fetch(`${API_BASE_URL}/convert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -623,51 +663,50 @@ async function convertMolecules() {
             }
 
             const data = await response.json();
-            const newMol = {
-                ...mol,
-                xyz: typeof data.xyz === 'string' ? data.xyz : data.xyz?.xyz || '',
-                molBlock: data.mol || null
-            };
-            convertedMolecules.push(newMol);
-            showSuccess(`Molécula "${mol.id}" convertida exitosamente`);
+            mol.xyz = typeof data.xyz === 'string' ? data.xyz : data.xyz?.xyz;
+            mol.molBlock = data.mol || null;
+
+            showSuccess(`Molécula convertida exitosamente`);
+
+            currentMoleculeIndex = 0;
+            currentXYZ = typeof data.xyz === 'string' ? data.xyz : data.xyz?.xyz || '';
+
+            const format = mol.molBlock ? 'sdf' : 'xyz';
+            const modelData = mol.molBlock || mol.xyz;
+
+            render3DMolecule(modelData, mol.smiles, format);
+            updateXYZDisplay();
+
+            document.getElementById('format-tab-bar').style.display = 'flex';
         }
 
-        molecules = convertedMolecules;
-        currentMoleculeIndex = 0;
-        currentXYZ = molecules[0].xyz;
-
-        const currentMol = molecules[0];
-        const format = currentMol.molBlock ? 'sdf' : 'xyz';
-        const modelData = currentMol.molBlock || currentMol.xyz;
-
-        render3DMolecule(modelData, currentMol.smiles, format);
-        updateXYZDisplay();
-
         // Mostrar controles si hay más de una molécula
-        const multiple = molecules.length > 1;
         if (moleculeControls) {
-            const prevBtn = document.getElementById('prev-molecule');
-            const nextBtn = document.getElementById('next-molecule');
-            const speedControl = document.querySelector('.speed-control');
-
+            const multiple = molecules.length > 1;
             if (prevBtn) prevBtn.style.display = multiple ? 'inline-block' : 'none';
             if (nextBtn) nextBtn.style.display = multiple ? 'inline-block' : 'none';
             if (speedControl) speedControl.style.display = 'flex';
             moleculeControls.style.display = 'flex';
         }
 
-        document.getElementById('format-tab-bar').style.display = 'flex';
+    loader.style.display = 'none';
+    label.style.visibility = 'visible';
+    convertBtn.disabled = false;
 
     } catch (error) {
         console.error("Error en convertMolecules:", error);
-        showError(`Error al convertir molécula: ${error.message}`);
-    } finally {
         loader.style.display = 'none';
         label.style.opacity = '1';
         convertBtn.disabled = false;
-        loader.innerHTML = '';
-        updateNavigationButtons();
+        loader.innerHTML = ''; // eliminar burbujas
+        showError(`Error al convertir molécula: ${error.message}`);
     }
+
+    loader.style.display = 'none';
+    label.style.opacity = '1';
+    convertBtn.disabled = false;
+    loader.innerHTML = '';
+    updateNavigationButtons();
 }
 
 // Mostrar controles de navegación si hay múltiples moléculas
@@ -1450,3 +1489,4 @@ window.navigateMolecules = navigateMolecules;
 window.toggleRotation = toggleRotation;
 window.changeRotationSpeed = changeRotationSpeed;
 window.retryVisualization = retryVisualization;
+
