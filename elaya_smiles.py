@@ -7,8 +7,6 @@ Elaborado por Gabriela Vidales, Luis Gonzalez, Filiberto Ortiz, and Gabriel Meri
 Funcionalidades principales
 - Conversión SMILES a 3D (RDKit, OpenBabel, NetworkX, Auto3D)
 - Visualización 3D (py3Dmol)
-- Análisis de similitud molecular (Tanimoto, SOAP, Valle-Oganov)
-- Generación de matrices de conectividad
 - Carga individual o por archivo.
 - Exportación de estructuras en formato .xyz.
 - Interfaz moderna y amigable.
